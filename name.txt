@@ -1,0 +1,58 @@
+EMSResponseDTO [emsResponseID=995352, xsncId=227727, trailId=1557342, sncName=null, receivedTime=Fri Jul 17 23:09:04 IST 2020, statusCode=FAILURE, statusDesc=The Request to BNC is failed for connectType/serviceId : ULH_DISCOVERY/1354132, Error : I/O error on POST request for "http://114.8.7.176:8090/restconf/operations/bnc-flex-snc:discover": Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused)-I/O error on POST request for "http://114.8.7.176:8090/restconf/operations/bnc-flex-snc:discover": Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused), remarks=NTLS to BNC RequestId : 67791dc9-c854-11ea-9e73-ef1f793b86d8, commandType=ULH_DISCOVERY, orderNumber=ITX05CX3, version=null, userId=null, actionType=null],
+EMSResponseDTO [emsResponseID=995344, xsncId=227727, trailId=1557342, sncName=null, receivedTime=Fri Jul 17 21:42:44 IST 2020, statusCode=FAILURE, statusDesc=The Request to BNC is failed for connectType/serviceId : ULH_DISCOVERY/1354132, Error : I/O error on POST request for "http://114.8.7.176:8090/restconf/operations/bnc-flex-snc:discover": Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused)-I/O error on POST request for "http://114.8.7.176:8090/restconf/operations/bnc-flex-snc:discover": Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused), remarks=NTLS to BNC RequestId : 58069c76-c848-11ea-9e73-ad06fd2e1872, commandType=ULH_DISCOVERY, orderNumber=ITX05CX3, version=null, userId=null, actionType=null],
+EMSResponseDTO [emsResponseID=963019, xsncId=227727, trailId=1557342, sncName=MOTR Test, receivedTime=Fri Jun 19 15:56:48 IST 2020, statusCode=SUCCESS, statusDesc=null, remarks=NTLS to BNC RequestId : 5f97ff1e-b217-11ea-8551-edd125bb0f75, commandType=ULH_DISCOVERY, orderNumber=ITX05CX3, version=null, userId=null, actionType=null]]
+ // @Async
+    public EMSResponseDTO retriveSncResponseStatus(Integer xsncId) {
+	LOGGER.info(Util.in("EMSResponseDataService.retriveSncResponseStatus()"));
+	EMSResponseDTO emsResponseDTO = null;
+	List<EMSResponseDTO> emsResponseDtoList = getEmsResponseByXsncId(xsncId);
+
+	if (ActivationUtil.isPopulated(emsResponseDtoList)) {
+	    emsResponseDTO = emsResponseDtoList.get(0);
+	}
+	LOGGER.info(Util.out("EMSResponseDataService.retriveSncResponseStatus()"));
+	return emsResponseDTO;
+    }
+
+    // @Async
+    public List<String> retriveAdditionalSncResponseStatus(Integer xsncId) {
+	LOGGER.info(Util.in("EMSResponseDataService.retriveAdditionalSncResponseStatus()"));
+	ArrayList<String> logList = new ArrayList<>();
+	try {
+		
+	    List<EMSResponseDTO> emsResponseDtoList = getEmsResponseByXsncId(xsncId);
+	    for (EMSResponseDTO response : emsResponseDtoList) {
+		StringBuilder cmd = new StringBuilder();
+		if (ActivationUtil.isPopulated(logList)) {
+		    logList.add("--------------------------------------------------");
+		}
+		cmd.append("Command Type[" + response.getCommandType() + "]");
+		if (ActivationUtil.isPopulated(response.getReceivedTime())) {
+		    cmd.append(", Executed At[" + response.getReceivedTime() + "]");
+		}
+		if (ActivationUtil.isPopulated(response.getStatusCode())) {
+		    cmd.append(", Status Code[" + response.getStatusCode() + "]");
+		}
+		logList.add(cmd.toString());
+		if (ActivationUtil.isPopulated(response.getStatusDesc())) {
+		    logList.add("\n");
+		    logList.add("Status Description[" + response.getStatusDesc() + "]");
+		}
+		if (ActivationUtil.isPopulated(response.getRemarks())) {
+		    logList.add("\n");
+		    logList.add("Details[" + response.getRemarks() + "]");
+		}
+		if (ActivationUtil.isPopulated(response.getRequest())) {
+		    logList.add("EMS Request[" + response.getRequest() + "]");
+		}
+		if (ActivationUtil.isPopulated(response.getResponse())) {
+		    logList.add("EMS Response[" + response.getResponse() + "]");
+		}
+	    }
+	} catch (Exception e) {
+	    LOGGER.error("Exception: ", e);
+	}
+	LOGGER.info(Util.out("EMSResponseDataService.retriveAdditionalSncResponseStatus()"));
+	
+	return logList;
+    }
